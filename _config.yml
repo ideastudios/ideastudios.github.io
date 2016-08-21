@@ -14,7 +14,7 @@ baseurl: ""                             # for example, '/blog' if your blog host
 RSS: false
 #weibo_username:     ideastudios
 #zhihu_username:     ideastudios
-#github_username:    ideastudios
+github_username:    ideastudios
 #twitter_username:  ideastudios
 #facebook_username:  ideastudios
 # linkedin_username:  firstname-lastname-idxxxx
@@ -68,8 +68,8 @@ ba_track_id: 827cccc6d709593a976dd3f9629c938e
 
 
 # Sidebar settings
-sidebar: false                          # whether or not using Sidebar.
-sidebar-about-description: "This is a sidebar"
+sidebar: true                          # whether or not using Sidebar.
+sidebar-about-description: "ideastudios"
 sidebar-avatar: /img/avatar-hux.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
