@@ -6,7 +6,9 @@ subtitle:   "安卓中Handler的机制"
 date:       2016-08-25
 author:     "ideastudio"
 tags:
-    - Hanlder,Looper,Message
+    - Hanlder
+    - Looper
+    - Message
 ---
 
 
