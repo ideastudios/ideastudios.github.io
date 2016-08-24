@@ -3,7 +3,7 @@ layout:     post
 title:      "Android Handler机制"
 subtitle:   "安卓中Handler的机制"
 #iframe:     "http://huangxuan.me/pwa-in-my-pov/"
-date:       2016-08-23
+date:       2016-08-25
 author:     "ideastudio"
 tags:
     - Hanlder,Looper,Message
@@ -12,15 +12,16 @@ tags:
 
 
 
-# android的消息处理有三个核心类：Looper,Handler和Message
+# Android的消息处理有三个核心类：Looper,Handler和Message
+
 ## 1.  消息类 Message
 
 android.os.Message的主要功能是进行消息的封装，同时可以指定消息的操作形式，Message类定义的变量和常用方法如下:  
-* public int what：变量，用于定义此Message属于何种操作
-* public Object obj：变量，用于定义此Message传递的信息数据，通过它传递信息
-* public int arg1：变量，传递一些整型数据时使用
-* public int arg2：变量，传递一些整型数据时使用
-* public Handler getTarget()：普通方法，取得操作此消息的Handler对象
+* public int what：变量，用于定义此Message属于何种操作  
+* public Object obj：变量，用于定义此Message传递的信息数据，通过它传递信息  
+* public int arg1：变量，传递一些整型数据时使用  
+* public int arg2：变量，传递一些整型数据时使用  
+* public Handler getTarget()：普通方法，取得操作此消息的Handler对象  
 
 
 在整个消息处理机制中，message又叫task，封装了任务携带的信息和处理该任务的handler,虽然Handler有默认的构造方法，但首选的方法是通过Message.obtain()获取Message对象，这样在大多数情况下，避免了创建新对象而分配内存
