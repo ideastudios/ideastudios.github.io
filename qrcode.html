@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Title</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .dsn{display: none;}
+
+    @keyframes loader {
+      to { background-position: -800px 0; }
+    }
+
+    .jz{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,.7);
+    }
+    .jz .loader {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      left: 50%;
+      top: 50%;
+      -webkit-transform:translate(-50%,-50%);
+      transform:translate(-50%,-50%);
+      text-indent: 999px;
+      overflow: hidden;
+      background: url(./loader.png) 0 0;
+      animation: loader 1s infinite steps(8);
+    }
+
+    html,body{
+      min-width: 100px;
+      min-height: 10px;
+      height: 100%;
+      width: 100%;
+    }
+    body, .userIdBox, .checkboxGroup {
+      display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+      display: -moz-box; /* 老版本语法: Firefox (buggy) */
+      display: -ms-flexbox; /* 混合版本语法: IE 10 */
+      display: -webkit-flex; /* 新版本语法： Chrome 21+ */
+      display: flex; /* 新版本语法： Opera 12.1, Firefox 22+ */ /*垂直居中*/ /*老版本语法*/
+      -webkit-box-align: center;
+      -moz-box-align: center; /*混合版本语法*/
+      -ms-flex-align: center; /*新版本语法*/
+      -webkit-align-items: center;
+      align-items: center; /*水平居中*/ /*老版本语法*/
+      -webkit-box-pack: center;
+      -moz-box-pack: center; /*混合版本语法*/
+      -ms-flex-pack: center; /*新版本语法*/
+      -webkit-justify-content: center;
+      justify-content: center;
+    }
+    .title{
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: 18px;
+    }
+    section {
+      min-width: 100px;
+      min-height: 10px;
+      padding: 10px 30px 20px;
+      border: 1px solid #323232;
+      border-radius: 10px;
+    }
+    .userIdBox{
+      width: 100%;
+    }
+    .userIdLabel{
+      width: 20%;
+      /*flex: 0 1 20%;*/
+      padding-right: 5px;
+      margin-right: 5px;
+      text-align: right;
+    }
+    .userId{
+      -webkit-box-flex: 1;
+      -moz-box-flex: 1; /*混合版本语法*/
+      -ms-flex-flex: 1; /*新版本语法*/
+      -webkit-flex-grow: 1;
+      flex-grow: 1;
+      border: 1px solid #dcdcdc;
+      height: 24px;
+      padding-left: 5px;
+      outline: none;
+      font: 16px/24px arial;
+      line-height: 22px;
+      background: transparent;
+      -webkit-appearance: none;
+    }
+    .userId:hover, .userId.hover{
+      border-color: #999;
+    }
+    .checkboxGroup{
+      -webkit-box-pack: justify;
+      -moz-box-pack: justify; /*混合版本语法*/
+      -ms-flex-pack: justify; /*新版本语法*/
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      padding: 10px 0 20px;
+    }
+    .check{
+      text-align: center;
+    }
+    .checkBtn{
+      padding: 6px 12px;
+      border: 1px solid rgba(0,0,0,.1);
+      background: #c00 linear-gradient(hsla(0,0%,100%,.2),
+      transparent);
+      border-radius: .2em;
+      box-shadow: 0 .05em .25em rgba(0,0,0,.5); color: white;
+      text-shadow: 0 -.05em .05em rgba(0,0,0,.5);
+    }
+    #code{
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+  <section id="form">
+    <h1 class="title">声纹demo</h1>
+    <div class="checkboxGroup">
+      <span class="checkboxWrap">
+        <input id="test_address" type="radio" name="address" checked value="test_address">
+        <label for="test_address">测试环境</label>
+      </span>
+      <span class="checkboxWrap">
+        <input id="producce_address" type="radio" name="address" value="producce_address">
+        <label for="producce_address">生产环境</label>
+      </span>
+    </div>
+    <div class="userIdBox">
+      <label class="userIdLabel" for="userId">userId: </label>
+      <input class="userId" type="text" id="userId">
+    </div>
+    <div class="checkboxGroup">
+      <span class="checkboxWrap">
+        <input id="register" type="radio" name="rest" checked value="register">
+        <label for="register">注册</label>
+      </span>
+      <span class="checkboxWrap">
+        <input id="verify" type="radio" name="rest" value="verify">
+        <label for="verify">验证</label>
+      </span>
+      <span class="checkboxWrap">
+        <input id="modify" type="radio" name="rest" value="modify">
+        <label for="modify">修改注册</label>
+      </span>
+    </div>
+    <div class="check">
+      <button id="checkBtn" class="checkBtn">查询</button>
+    </div>
+  </section>
+  <section id="code" class="dsn">
+    <div id="qrcode" style="width:250px; height:250px;"></div>
+  </section>
+  <section id="resultBox" class="dsn">
+    <div id="resultMsg" style="width:250px; height:250px;"></div>
+  </section>
+  <div class="jz dsn">
+    <div class="loader">Loading…</div>
+  </div>
+  <script src="jquery.min.js"></script>
+  <script type="text/javascript" src="qrcode.js"></script>
+  <!--<script type="text/javascript" src="base64.js"></script>-->
+  <script>
+    $(function () {
+
+      $('#userId').focus(function () {
+        $(this).addClass('hover');
+      }).blur(function () {
+        $(this).removeClass('hover');
+      });
+
+      var producce_address = "http://vprc-core.pingan.com.cn/vprc_core_portal/rest/api/",
+        test_address = "https://test-vprc-core.pingan.com.cn:56443/vprc_core_portal/rest/api/";
+      var dmz_domain = test_address;
+      var appId = 10007,
+        scene = 'dmz_cll',
+        userId,
+        onlyId,
+        registerData,
+        getOnlyIdData,
+        codeData,
+        resultData,
+        registerCode,
+        getOnlyIdCode,
+        registerFinishDef = $.Deferred(),
+        registerDef = $.Deferred(),
+        getOnlyIdFinishDef = $.Deferred(),
+        codeShowDef = $.Deferred(),
+        getOnlyIdDef = $.Deferred();
+
+      registerData = {"userId":"","appId":appId,"scene":scene};
+      getOnlyIdData = {"userId":"","appId":appId,"scene":scene,"type":"","osType":4};
+      codeData = {"userId":"","appId":appId,"scene":scene,"type":"","onlyId":""};
+      resultData = {"onlyId":"","osType":4};
+
+      $('#checkBtn').off('click').on('click',function () {
+
+        var _address=$("input[name='address']:checked").attr('value');
+        dmz_domain = _address == 'test_address' ? test_address : producce_address;
+
+        if(!$('#userId').val()){
+          alert('请输入userId');
+        }else{
+          registerData['userId'] = getOnlyIdData['userId'] = codeData['userId'] = $('#userId').val();
+          console.log("codeData['userId']: "+codeData['userId']);
+          $.ajax({
+            url: dmz_domain+'/isRegister',
+            type: 'POST',
+            beforeSend: function () {
+              $('.jz').show();
+            },
+            data: registerData
+          }).done(function (response) {
+            /*
+             {"data":
+             {
+             "returnCode":"200",
+             "returnMsg":"用户已注册",
+             "returnData":{
+             "code":"201",
+             "msg":"用户已注册"
+             },
+             "returnFlag":"SUCC",
+             "serialNum":"FRS15028524981639Z6pEPth"
+             },
+             "responseCode":"00",
+             "responseMsg":"操作成功"
+             }
+             */
+            console.log('response: '+JSON.parse(response));
+            console.log(JSON.parse(response));
+            var responseCode = JSON.parse(response)['data']['returnData']['code'];
+            console.log('responseCode: '+responseCode);
+            switch (responseCode){
+              case('201'):
+                console.log("用户已注册");
+                registerCode = '201';
+                break;
+              case('203'):
+                console.log("用户尚未注册");
+                registerCode = '203';
+                break;
+              case('601'):
+                console.log("用户注册过，但是并未成功");
+                registerCode = '601';
+                break;
+            }
+            registerDef.resolve();
+          });
+        }
+
+        var _index=$("input[name='rest']:checked").attr('value');
+        console.log('_index: '+_index);
+
+        registerDef.done(function () {
+          if(registerCode == '201'){
+            if(_index == 'register'){
+              $('.jz').hide();
+              alert('你已经注册过了，不能再注册');
+              location.href = location.href;
+//              registerFinishDef.reject();
+            }else if(_index == 'verify'){
+              console.log('可以验证');
+              getOnlyIdData["type"] = _index;
+              codeData["type"] = _index;
+              registerFinishDef.resolve();
+            }else if(_index == 'modify'){
+              console.log('可以修改注册');
+              getOnlyIdData["type"] = _index;
+              codeData["type"] = _index;
+              registerFinishDef.resolve();
+            }
+          }else if(registerCode == '203'){
+            if(_index == 'register'){
+              console.log('可以注册');
+              getOnlyIdData["type"] = _index;
+              codeData["type"] = _index;
+              registerFinishDef.resolve();
+            }else if(_index == 'verify'){
+              $('.jz').hide();
+              alert('未注册，不能验证');
+              location.href = location.href;
+            }else if(_index == 'modify'){
+              $('.jz').hide();
+              alert('未注册，不能修改注册');
+              location.href = location.href;
+            }
+          }else if(registerCode == '601'){
+            if(_index == 'register'){
+              $('.jz').hide();
+              alert('你已经注册过了，不能再注册');
+              location.href = location.href;
+            }else if(_index == 'verify'){
+              $('.jz').hide();
+              alert('注册未成功，不能验证');
+              location.href = location.href;
+            }else if(_index == 'modify'){
+              console.log('可以修改注册');
+              getOnlyIdData["type"] = _index;
+              codeData["type"] = _index;
+              registerFinishDef.resolve();
+            }
+          }
+        });
+
+        registerFinishDef.done(function () {
+          console.log('getOnlyIdData');
+          console.log(getOnlyIdData);
+          $.ajax({
+            url: dmz_domain+'/get_only_id',
+            type: 'POST',
+            data: getOnlyIdData
+          }).done(function (data) {
+            /*
+             {"data":
+             {
+             "returnCode":"200",
+             "returnMsg":"交易成功",
+             "returnData":
+             {
+             "onlyId":"VVCR1502862433953WX4AOg3e",
+             "code":"200",
+             "msg":"交易成功"
+             },
+             "returnFlag":"SUCC"
+             },
+             "responseCode":"00",
+             "responseMsg":"操作成功"
+             }
+             */
+            getOnlyIdCode = JSON.parse(data)['data']['returnData']['code'];
+            switch (getOnlyIdCode){
+              case('200'):
+                console.log('获取onlyId成功');
+                console.log(JSON.parse(data)['data']['returnData']['onlyId']);
+                onlyId = JSON.parse(data)['data']['returnData']['onlyId'];
+                codeData["onlyId"] = resultData["onlyId"] = onlyId;
+                getOnlyIdFinishDef.resolve();
+                break;
+            }
+          });
+        });
+
+        getOnlyIdFinishDef.done(function () {
+//          debugger;
+          console.log('codeData');
+          console.log(codeData);
+//          userId: "xinran", appId: 10007, scene: "dmz_cll", type: "verify", onlyId: "VVCR15028708376069rW25XZ4"
+//          var info = "userId="+codeData["userId"]+"&appId="+codeData["appId"]+"&scene="+codeData["scene"]+"&type="+codeData["type"]+"&onlyId="+codeData["onlyId"]+"";
+          var info = ""+codeData["onlyId"];
+//          var b = new Base64();
+          var str = info;
+//          $('#qrcode').html('');
+          $("#qrcode").empty();
+          //获取onlyId后生成二维码
+          var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 250,
+            height : 250
+          });
+          function makeCode (str) {
+            $('#form').hide();
+            qrcode.makeCode(str);
+            $('#code').show();
+            $('.jz').hide();
+            codeShowDef.resolve();
+          }
+          makeCode(str);
+        });
+
+        function result(resultData,i) {
+          $.ajax({
+            url: dmz_domain+'/queryAlgorithmResultInfo',
+            type: 'POST',
+            data: resultData
+          }).done(function (data) {
+            /*
+             {
+             "data":{
+             "returnCode":"605",
+             "returnMsg":"验证结果尚未返回",
+             "returnData":{
+             "code":"605",
+             "msg":"验证结果尚未返回"
+             },
+             "returnFlag":"FAIL"
+             },
+             "responseCode":"00",
+             "responseMsg":"操作成功"
+             }
+             */
+            var resultCode, resultResponse = JSON.parse(data)['data']['returnData'];
+            resultCode = resultResponse['code'];
+            console.log("result-code: "+resultCode);
+
+            var codeIA = setInterval(function () {
+              if(resultCode == 605 || resultCode == 602 || resultCode == 2000 || resultCode == 1001){  //验证结果未返回
+                console.log(resultCode+'继续轮询');
+                clearInterval(codeIA);
+                result(resultData,i);
+              }else if(i == 1){
+                clearInterval(codeIA);
+                $('#code').hide();
+                console.log('验证结果code: '+resultCode);
+                $('#resultBox').html(resultResponse['msg']).show();
+
+                if(resultCode == 600){  //注册成功
+
+                }else if(resultCode == 601){  //注册失败
+
+                }else{
+
+                }
+              }else if(i == 2){
+                clearInterval(codeIA);
+                $('#code').hide();
+                console.log('验证结果code: '+resultCode);
+                $('#resultBox').html(resultResponse['msg']).show();
+
+                if(resultCode == 603){  //验证成功
+
+                }else if(resultCode == 604){  //验证失败
+
+                }else{
+
+                }
+              }
+            },1000);
+          });
+        }
+
+        codeShowDef.done(function () {
+          if(_index == 'register' || _index == 'modify'){  //获取注册结果
+            var codeTA = setTimeout(function () {
+              clearTimeout(codeTA);
+              result(resultData,1);
+            },15000);
+          }else if(_index == 'verify'){  //获取验证结果
+            var codeTB = setTimeout(function () {
+              clearTimeout(codeTB);
+              result(resultData,2);
+            },8000);
+          }
+        });
+      });
+
+    })
+  </script>
+</body>
+</html>
